@@ -1,8 +1,8 @@
 # StraTistics
 
-StraTistics is an end-to-end data engineering and analytics pipeline built to extract, load, transform, and analyze fitness data from Strava. 
+StraTistics is an end-to-end data engineering and analytics pipeline built to extract, load, transform, and analyze running data from Strava. 
 
-## 🏗 Architecture & Data Flow
+## Architecture & Data Flow
 
 The project follows a standard Medallion Architecture (Bronze, Silver, Gold) powered by a modern data stack:
 
@@ -11,7 +11,7 @@ The project follows a standard Medallion Architecture (Bronze, Silver, Gold) pow
 3. **Transformation:** dbt (data build tool) handles the SQL transformation logic, cleaning the raw data into a `silver` staging layer (views), and finally aggregating it into `gold` marts and `metrics` (tables) ready for BI and reporting.
 4. **Data Quality:** Great Expectations is integrated to ensure data integrity, validate pipeline outputs, and catch anomalies early.
 
-## 🛠 Technology Stack
+## Technology Stack
 
 * **Database / Data Warehouse:** PostgreSQL 16
 * **Orchestration:** Apache Airflow 2.9.1
@@ -20,7 +20,7 @@ The project follows a standard Medallion Architecture (Bronze, Silver, Gold) pow
 * **Ingestion/Scripts:** Python (Requests, Pandas, fitparse, gpxpy, psycopg2)
 * **Infrastructure:** Docker & Docker Compose
 
-## 📁 Project Structure
+## Project Structure
 
 ```text
 StraTistics/
@@ -34,15 +34,15 @@ StraTistics/
 └── .env.example        # Example template for required environment variables
 ```
 
-## ⚙️ Prerequisites
+## Prerequisites
 
 Before you begin, ensure you have the following installed:
 * [Docker](https://docs.docker.com/get-docker/) and [Docker Compose](https://docs.docker.com/compose/install/)
-* A Strava Developer Account with API credentials (Client ID, Client Secret, Refresh Token). You can create an application in your [Strava API Settings](https://www.strava.com/settings/api).
+* A Strava Developer Account (requires subscription) with API credentials (Client ID, Client Secret, Refresh Token). You can create an application in your [Strava API Settings](https://www.strava.com/settings/api).
 
-## 🚀 Setup Instructions
+## Setup Instructions
 
-1. **Clone the repository** (if applicable) and navigate to the project root.
+1. **Clone the repository** and navigate to the project root.
 
 2. **Configure Environment Variables:**
    * Copy the example `.env` file to create your local `.env`:
@@ -62,18 +62,18 @@ Before you begin, ensure you have the following installed:
    * Navigate to `http://localhost:8080` in your web browser.
    * Log in using the default credentials defined in your docker-compose setup (Username: `admin`, Password: `admin`).
 
-## 🏃 Running the Pipeline
+## Running the Pipeline
 
 1. **Initialize the Data Warehouse:** Ensure the `init_bronze.sql` script has been executed against your PostgreSQL database to create the necessary schemas and raw tables.
 2. **Initial Load (Backfill):** Trigger the `strava_backfill` DAG in the Airflow UI to extract your historical data from Strava and populate the `bronze` layer.
 3. **Transformations (dbt):** The dbt models handle the transformation from `bronze` -> `silver` -> `gold`. Depending on your DAG configuration, these run automatically after ingestion or can be run manually via the dbt CLI inside the `dbt_strava` directory (`dbt run`).
 4. **Incremental Sync:** Enable the `strava_incremental_sync` DAG in Airflow to run on a set schedule, automatically fetching only newly completed activities.
 
-## 🛡️ Data Quality Validation
+## Data Quality Validation
 
 Great Expectations suites are located in the `quality/` directory. You can run validations against the loaded data to ensure everything meets your defined data contracts using the provided scripts (e.g., `python quality/run_validations.py`).
 
-## 🧹 Maintenance
+## Maintenance
 
 * **Logs:** Airflow and dbt generate logs. Ensure these directories (`logs/`, `dbt_strava/logs/`) are added to your `.gitignore` to keep your repository clean.
 * **Teardown:** To stop the services and remove containers, run:
