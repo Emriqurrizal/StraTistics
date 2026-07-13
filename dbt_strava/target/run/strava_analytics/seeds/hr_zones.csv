@@ -1,9 +1,7 @@
 
     
     
-    
-    create table "airflow"."public"."hr_zones" ("zone" text,"min_hr" integer,"max_hr" integer)
-  ;
+    truncate table "airflow"."public"."hr_zones";
     -- dbt seed --
     
           insert into "airflow"."public"."hr_zones" ("zone", "min_hr", "max_hr") values

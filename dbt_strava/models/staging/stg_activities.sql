@@ -8,6 +8,14 @@ select
     strava_id,
     name,
     sport_type,
+    CASE 
+        WHEN name ILIKE '%tempo%' THEN 'Tempo'
+        WHEN name ILIKE '%interval%' OR name ILIKE '%workout%' THEN 'Intervals'
+        WHEN name ILIKE '%long%' THEN 'Long Run'
+        WHEN name ILIKE '%easy%' OR name ILIKE '%recovery%' THEN 'Easy'
+        WHEN name ILIKE '%race%' THEN 'Race'
+        ELSE 'Base Run'
+    END as workout_type,
     start_date,
     -- Convert distance from meters to km
     distance / 1000.0 as distance_km,

@@ -1,5 +1,5 @@
 {{ config(materialized='table') }}
-
+-- depends_on: {{ ref('stg_activities') }}
 with stg_activities as (
     select * from {{ ref('stg_activities') }}
 ),
@@ -11,6 +11,7 @@ select
     a.strava_id,
     a.name,
     a.sport_type,
+    a.workout_type,
     a.start_date,
     a.start_date::date as date_day,
     a.distance_km,
