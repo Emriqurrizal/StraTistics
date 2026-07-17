@@ -73,20 +73,24 @@ if not activities_df.empty:
         # Query splits for this activity
         query_splits = """
             SELECT 
-                split_number as lap,
-                distance_km,
-                moving_time_min,
-                average_speed_m_s,
+                lap_index as lap,
+                lap_distance_km,
+                moving_time,
                 average_heartrate,
-                elevation_difference_m,
                 pace_min_per_km
             FROM public_silver.stg_splits
             WHERE strava_id = %s
-            ORDER BY split_number
+            ORDER BY lap_index
         """
         # stg_splits might have strava_id as bigint or text, psycopg2 handles it
         splits_df = run_query(query_splits, (selected_id,))
         
+        if not splits_df.empty:
+            # Round numeric columns to 1 decimal place
+            splits_df = splits_df.round(1)
+            # Filter out laps with 0 distance
+            splits_df = splits_df[splits_df['lap_distance_km'] > 0]
+            
         if not splits_df.empty:
             st.markdown(f"**Lap Pacing for {selected_option}**")
             
@@ -97,11 +101,9 @@ if not activities_df.empty:
                 color='average_heartrate',
                 color_continuous_scale='Inferno',
                 labels={'lap': 'Lap Number', 'pace_min_per_km': 'Pace (min/km)'},
-                hover_data=['distance_km', 'elevation_difference_m']
+                hover_data=['lap_distance_km', 'moving_time']
             )
             
-            # Invert y-axis so faster pace (lower number) is visually higher
-            fig.update_yaxes(autorange="reversed")
             fig.update_layout(**CHART_LAYOUT)
             
             st.plotly_chart(fig, use_container_width=True)

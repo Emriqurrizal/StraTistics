@@ -45,15 +45,14 @@ def get_connection():
     return conn
 
 @st.cache_data(ttl=300)
-def run_query(query: str, params: tuple = None) -> pd.DataFrame:
-    """Run a read-only query and return a pandas DataFrame."""
+def _run_query_internal(query: str, params: tuple = None) -> pd.DataFrame:
+    """Internal cached query execution."""
     for attempt in range(2):
         conn = None
         try:
             conn = get_connection()
             if conn is None:
-                st.error("Failed to obtain database connection.")
-                return pd.DataFrame()
+                raise Exception("Failed to obtain database connection.")
                 
             with conn.cursor() as cur:
                 cur.execute(query, params)
@@ -71,9 +70,16 @@ def run_query(query: str, params: tuple = None) -> pd.DataFrame:
                     pass
             
             # If the connection dropped, clear cache and retry once
-            if attempt == 0 and ("SSL" in str(e) or "connection" in str(e).lower() or "closed" in str(e).lower()):
+            if attempt == 0 and ("SSL" in str(e) or "connection" in str(e).lower() or "closed" in str(e).lower() or "translate host name" in str(e).lower()):
                 get_connection.clear()
                 continue
                 
-            st.error(f"Error executing query: {e}")
-            return pd.DataFrame()
+            raise e
+
+def run_query(query: str, params: tuple = None) -> pd.DataFrame:
+    """Run a read-only query and return a pandas DataFrame."""
+    try:
+        return _run_query_internal(query, params)
+    except Exception as e:
+        st.error(f"Error executing query: {e}")
+        return pd.DataFrame()
