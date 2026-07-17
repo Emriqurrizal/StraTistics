@@ -41,8 +41,8 @@ class StravaAPIClient:
                 limit_15m, limit_day = map(int, limit_str.split(','))
                 
                 if usage_15m >= limit_15m or usage_day >= limit_day:
-                    logger.error(f"Rate limit exceeded: Usage={usage_str}, Limit={limit_str}")
-                    raise StravaRateLimitExceeded("Strava API rate limit reached.")
+                    logger.warning(f"Rate limit exceeded: Usage={usage_str}, Limit={limit_str}. Will retry after backoff.")
+                    return
                     
                 # Optional: Add sleep if approaching limit
                 if limit_15m - usage_15m < 5:
@@ -65,8 +65,9 @@ class StravaAPIClient:
             if response.status_code == 200:
                 return response.json()
             elif response.status_code == 429:
-                logger.warning("429 Too Many Requests. Backing off...")
-                time.sleep(backoff ** (attempt + 1) * 5)
+                wait = 900
+                logger.warning(f"429 Too Many Requests. Waiting {wait}s for rate limit reset...")
+                time.sleep(wait)
             elif response.status_code >= 500:
                 logger.warning(f"Server error {response.status_code}. Retrying...")
                 time.sleep(backoff ** (attempt + 1))
