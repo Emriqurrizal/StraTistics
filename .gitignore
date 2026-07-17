@@ -6,3 +6,6 @@ dbt_strava/target/
 dbt_strava/logs/
 dbt_strava/dbt_packages/
 dbt_strava/.user.yml
+
+# Streamlit
+dashboard/.streamlit/secrets.toml
