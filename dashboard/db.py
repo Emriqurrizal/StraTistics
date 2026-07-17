@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 # In production on Streamlit Cloud, it will use st.secrets
 load_dotenv()
 
-@st.cache_resource
+@st.cache_resource(validate=lambda conn: conn.closed == 0)
 def get_connection():
     # Try getting from st.secrets first (for Streamlit Cloud), then os.environ (local)
     try:
@@ -37,7 +37,8 @@ def get_connection():
         password=password,
         host=host,
         dbname=dbname,
-        port="5432"
+        port="5432",
+        sslmode="require"
     )
     # Set autocommit for read-only analytical queries to prevent aborted transaction blocks
     conn.autocommit = True
@@ -46,17 +47,33 @@ def get_connection():
 @st.cache_data(ttl=300)
 def run_query(query: str, params: tuple = None) -> pd.DataFrame:
     """Run a read-only query and return a pandas DataFrame."""
-    conn = get_connection()
-    with conn.cursor() as cur:
+    for attempt in range(2):
+        conn = None
         try:
-            cur.execute(query, params)
-            if cur.description:
-                columns = [desc[0] for desc in cur.description]
-                data = cur.fetchall()
-                return pd.DataFrame(data, columns=columns)
-            else:
+            conn = get_connection()
+            if conn is None:
+                st.error("Failed to obtain database connection.")
                 return pd.DataFrame()
+                
+            with conn.cursor() as cur:
+                cur.execute(query, params)
+                if cur.description:
+                    columns = [desc[0] for desc in cur.description]
+                    data = cur.fetchall()
+                    return pd.DataFrame(data, columns=columns)
+                else:
+                    return pd.DataFrame()
         except Exception as e:
-            conn.rollback()
+            if conn is not None:
+                try:
+                    conn.rollback()
+                except Exception:
+                    pass
+            
+            # If the connection dropped, clear cache and retry once
+            if attempt == 0 and ("SSL" in str(e) or "connection" in str(e).lower() or "closed" in str(e).lower()):
+                get_connection.clear()
+                continue
+                
             st.error(f"Error executing query: {e}")
             return pd.DataFrame()

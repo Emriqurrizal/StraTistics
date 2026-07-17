@@ -17,7 +17,7 @@ query_pace_trend = """
         rolling_4w_pace,
         rolling_8w_pace,
         rolling_12w_pace
-    FROM metrics.pace_trend
+    FROM public_metrics.pace_trend
     WHERE week_start_date BETWEEN %s AND %s
     ORDER BY week_start_date
 """
@@ -29,7 +29,7 @@ if not pace_df.empty:
         ['weekly_pace', 'rolling_4w_pace', 'rolling_8w_pace', 'rolling_12w_pace'],
         "Pace Trend (Weekly & Rolling Averages)",
         y_title="Pace (min/km)",
-        inverted_y=True
+        inverted_y=False
     )
     st.plotly_chart(fig1, use_container_width=True)
 
@@ -54,10 +54,9 @@ with col1:
             scatter_df, 'avg_pace_min_per_km', 'average_heartrate', 
             'workout_type', 'distance_km', ['name', 'date_day'],
             "Pace vs Heart Rate",
-            inverted_y=True
+            inverted_y=False
         )
         # Update X axis to be inverted for Pace
-        fig2.update_xaxes(autorange="reversed")
         st.plotly_chart(fig2, use_container_width=True)
 
 with col2:
@@ -65,7 +64,7 @@ with col2:
         SELECT 
             zone,
             SUM(total_minutes_in_zone) as total_minutes
-        FROM metrics.hr_zone_distribution
+        FROM public_metrics.hr_zone_distribution
         WHERE date_day BETWEEN %s AND %s
         GROUP BY zone
         ORDER BY zone
@@ -82,7 +81,7 @@ with col3:
     query_hr_area = """
         SELECT 
             date_day, zone, total_minutes_in_zone
-        FROM metrics.hr_zone_distribution
+        FROM public_metrics.hr_zone_distribution
         WHERE date_day BETWEEN %s AND %s
         ORDER BY date_day, zone
     """

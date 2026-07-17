@@ -80,7 +80,7 @@ if not activities_df.empty:
                 average_heartrate,
                 elevation_difference_m,
                 pace_min_per_km
-            FROM silver.stg_splits
+            FROM public_silver.stg_splits
             WHERE strava_id = %s
             ORDER BY split_number
         """
