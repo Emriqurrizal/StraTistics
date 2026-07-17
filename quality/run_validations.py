@@ -15,7 +15,8 @@ def get_db_connection():
         port=os.getenv("POSTGRES_PORT", "5433"),
         dbname=os.getenv("POSTGRES_DB", "airflow"),
         user=os.getenv("POSTGRES_USER", "airflow"),
-        password=os.getenv("POSTGRES_PASSWORD", "airflow")
+        password=os.getenv("POSTGRES_PASSWORD", "airflow"),
+        sslmode=os.getenv("POSTGRES_SSLMODE", "require")
     )
 
 def run_suite(df, suite_path):
