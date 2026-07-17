@@ -39,7 +39,9 @@ jobs:
 
       - name: 2. Transform Data (dbt Silver and Gold Layers)
         working-directory: dbt_strava
-        run: dbt run --profiles-dir .
+        run: |
+          dbt deps
+          dbt run --profiles-dir .
 
       - name: 3. Data Quality Check (Great Expectations)
         run: python quality/run_validations.py

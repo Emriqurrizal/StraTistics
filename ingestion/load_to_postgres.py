@@ -14,11 +14,11 @@ logger = logging.getLogger(__name__)
 
 def get_db_connection():
     return psycopg2.connect(
-        host=os.getenv("POSTGRES_HOST", "127.0.0.1"),
-        port=os.getenv("POSTGRES_PORT", "5433"),
-        dbname=os.getenv("POSTGRES_DB", "airflow"),
-        user=os.getenv("POSTGRES_USER", "airflow"),
-        password=os.getenv("POSTGRES_PASSWORD", "airflow"),
+        host=os.getenv("POSTGRES_HOST"),
+        port=os.getenv("POSTGRES_PORT", "5432"),
+        dbname=os.getenv("POSTGRES_DB", "neondb"),
+        user=os.getenv("POSTGRES_USER"),
+        password=os.getenv("POSTGRES_PASSWORD"),
         sslmode=os.getenv("POSTGRES_SSLMODE", "require")
     )
 
