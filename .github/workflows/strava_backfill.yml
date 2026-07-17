@@ -37,10 +37,14 @@ jobs:
       - name: 1. API Backfill Ingestion (Bronze Layer)
         run: python ingestion/api_backfill.py
 
-      - name: 2. Transform Data (dbt Silver and Gold Layers)
+      - name: 2a. Load Seed Data (dbt)
+        working-directory: dbt_strava
+        run: dbt seed --profiles-dir .
+
+      - name: 2b. Transform Data (dbt Silver and Gold Layers)
         working-directory: dbt_strava
         run: |
-          dbt deps
+          dbt deps --profiles-dir .
           dbt run --profiles-dir .
 
       - name: 3. Data Quality Check (Great Expectations)
