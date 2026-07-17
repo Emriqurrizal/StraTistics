@@ -12,7 +12,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from ingestion.strava_auth import StravaAuth
 from ingestion.strava_api_client import StravaAPIClient
-from ingestion.load_to_postgres import get_db_connection, upsert_activities, upsert_streams, upsert_gear
+from ingestion.load_to_postgres import get_db_connection, upsert_activities, upsert_streams, upsert_gear, create_schema_if_not_exists
 
 logging.basicConfig(level=logging.INFO, format='%(message)s')
 
@@ -23,7 +23,8 @@ def run_daily_sync():
     
     print("Connecting to PostgreSQL...")
     conn = get_db_connection()
-    
+    create_schema_if_not_exists(conn)
+
     print("Fetching your 30 most recent activities from Strava for daily sync...")
     # Fetch 30 most recent activities to ensure we don't miss any recent runs
     data = client._request("GET", "athlete/activities", params={'page': 1, 'per_page': 30})
@@ -68,6 +69,7 @@ def run_daily_sync():
                 
         except Exception as e:
             print(f"Error processing activity {act_id}: {e}")
+            conn.rollback()
             
     print(f"Upserting {len(detailed_activities)} detailed activities into bronze.raw_activities...")
     upsert_activities(conn, detailed_activities)

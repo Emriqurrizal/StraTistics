@@ -12,7 +12,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from ingestion.strava_auth import StravaAuth
 from ingestion.strava_api_client import StravaAPIClient
-from ingestion.load_to_postgres import get_db_connection, upsert_activities, upsert_streams, upsert_gear
+from ingestion.load_to_postgres import get_db_connection, upsert_activities, upsert_streams, upsert_gear, create_schema_if_not_exists
 
 logging.basicConfig(level=logging.INFO, format='%(message)s')
 
@@ -23,7 +23,8 @@ def run_api_backfill():
     
     print("Connecting to PostgreSQL...")
     conn = get_db_connection()
-    
+    create_schema_if_not_exists(conn)
+
     print("Fetching ALL historical activities from Strava for backfill...")
     # This uses the built-in pagination to fetch everything
     data = client.get_activities()
@@ -68,6 +69,7 @@ def run_api_backfill():
                 
         except Exception as e:
             print(f"Error processing activity {act_id}: {e}")
+            conn.rollback()
             
     print(f"Upserting {len(detailed_activities)} detailed activities into bronze.raw_activities...")
     upsert_activities(conn, detailed_activities)
