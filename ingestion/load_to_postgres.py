@@ -202,6 +202,56 @@ def upsert_streams(conn, strava_id: int, streams_df: pd.DataFrame, source: str =
     conn.commit()
     logger.info(f"Upserted {len(values)} stream points for activity {strava_id}.")
 
+def upsert_laps(conn, strava_id: int, laps_data: list):
+    """Upserts lap data into bronze.raw_laps."""
+    if not laps_data:
+        return
+        
+    valid_cols = [
+        'distance', 'elapsed_time', 'moving_time',
+        'average_speed', 'average_heartrate', 'max_heartrate', 'average_cadence'
+    ]
+    
+    values = []
+    actual_cols = set(['lap_index'])
+    
+    for lap in laps_data:
+        row = {'strava_id': strava_id}
+        
+        # Strava uses 'split' in splits_metric, and 'lap_index' in laps
+        if 'split' in lap:
+            row['lap_index'] = lap['split']
+        elif 'lap_index' in lap:
+            row['lap_index'] = lap['lap_index']
+        else:
+            continue
+            
+        for col in valid_cols:
+            if col in lap:
+                row[col] = lap[col]
+                actual_cols.add(col)
+        values.append(row)
+        
+    if not values:
+        return
+        
+    db_columns = ['strava_id'] + list(actual_cols)
+    tuples = []
+    for row in values:
+        tuples.append(tuple(row.get(col) for col in db_columns))
+        
+    query = f"""
+        INSERT INTO bronze.raw_laps ({','.join(db_columns)})
+        VALUES %s
+        ON CONFLICT (strava_id, lap_index) DO UPDATE SET
+        {','.join([f"{col} = EXCLUDED.{col}" for col in db_columns if col not in ['strava_id', 'lap_index']])};
+    """
+    
+    with conn.cursor() as cur:
+        execute_values(cur, query, tuples)
+    conn.commit()
+    logger.info(f"Upserted {len(tuples)} laps for activity {strava_id}.")
+
 def upsert_gear(conn, gear_data: dict):
     """Upserts gear details into bronze.raw_gear."""
     if not gear_data:

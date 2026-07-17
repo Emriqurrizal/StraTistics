@@ -2,6 +2,9 @@ import os
 import sys
 import logging
 import pandas as pd
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Suppress pandas warning
 import warnings
@@ -12,7 +15,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from ingestion.strava_auth import StravaAuth
 from ingestion.strava_api_client import StravaAPIClient
-from ingestion.load_to_postgres import get_db_connection, upsert_activities, upsert_streams, upsert_gear, create_schema_if_not_exists
+from ingestion.load_to_postgres import get_db_connection, upsert_activities, upsert_streams, upsert_laps, upsert_gear, create_schema_if_not_exists
 
 logging.basicConfig(level=logging.INFO, format='%(message)s')
 
@@ -66,6 +69,13 @@ def run_api_backfill():
                     print(f"Skipping streams for {act_id} due to parsing error: {e}")
             else:
                 print(f"No streams available for {act_id}")
+                
+            # Extract and load splits_metric as laps
+            splits = detailed_act.get('splits_metric', [])
+            if splits:
+                upsert_laps(conn, act_id, splits)
+            else:
+                print(f"No splits_metric available for {act_id}")
                 
         except Exception as e:
             print(f"Error processing activity {act_id}: {e}")
