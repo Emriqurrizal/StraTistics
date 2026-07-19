@@ -9,6 +9,7 @@ CHART_LAYOUT = dict(
     plot_bgcolor='rgba(0,0,0,0)',
     font=dict(color='#FAFAFA'),
     margin=dict(l=10, r=10, t=40, b=10),
+    legend_title_text='',
     legend=dict(
         orientation="h",
         yanchor="top",
@@ -17,6 +18,14 @@ CHART_LAYOUT = dict(
         x=0.5
     )
 )
+HR_ZONE_COLOR_MAP = {
+    'Z5': '#EF4444',   # Bright red
+    'Z4': '#F97316',   # Bright orange
+    'Z3': '#EAB308',   # Gold
+    'Z2': '#22C55E',   # Bright green
+    'Z1': '#3B82F6'    # Bright blue
+}
+
 WORKOUT_COLOR_MAP = {
     'Easy Run': '#FDBA74',    # Soft peach-orange — gentle effort
     'Easy': '#FDBA74',
@@ -45,12 +54,13 @@ def create_time_series(df: pd.DataFrame, x: str, y_cols: list, title: str,
     fig = go.Figure()
     
     colors = ['#FC4C02', '#4CAF50', '#2196F3', '#FFC107']
+    dash_styles = ['solid', 'dash', 'dot', 'dashdot', 'longdash', 'longdashdot']
     
     for i, col in enumerate(y_cols):
         line_style = dict(color=colors[i % len(colors)])
         if 'rolling' in col.lower() or 'avg' in col.lower():
             if i > 0:
-                line_style['dash'] = 'dot' if i > 1 else 'dash'
+                line_style['dash'] = dash_styles[i % len(dash_styles)]
                 
         fig.add_trace(go.Scatter(
             x=df[x], y=df[col],
@@ -72,6 +82,14 @@ def create_time_series(df: pd.DataFrame, x: str, y_cols: list, title: str,
 
 def create_stacked_bar(df: pd.DataFrame, x: str, y: str, color: str, title: str, color_discrete_map: dict = None) -> go.Figure:
     """Create a stacked bar chart."""
+    fig = px.bar(df, x=x, y=y, color=color, title=title, 
+                 color_discrete_sequence=px.colors.qualitative.Bold if not color_discrete_map else None,
+                 color_discrete_map=color_discrete_map)
+    fig.update_layout(**CHART_LAYOUT)
+    return fig
+
+def create_bar(df: pd.DataFrame, x: str, y: str, title: str, color: str = None, color_discrete_map: dict = None) -> go.Figure:
+    """Create a bar chart."""
     fig = px.bar(df, x=x, y=y, color=color, title=title, 
                  color_discrete_sequence=px.colors.qualitative.Bold if not color_discrete_map else None,
                  color_discrete_map=color_discrete_map)
@@ -312,12 +330,15 @@ def create_github_heatmap(
     
     return fig
 
-def create_donut(df: pd.DataFrame, names: str, values: str, title: str, color_discrete_map: dict = None) -> go.Figure:
+def create_donut(df: pd.DataFrame, names: str, values: str, title: str, color_discrete_map: dict = None, category_orders: dict = None, sort: bool = True) -> go.Figure:
     """Create a donut chart."""
     fig = px.pie(df, values=values, names=names, color=names, hole=0.4, title=title,
                  color_discrete_sequence=px.colors.qualitative.Pastel if not color_discrete_map else None,
-                 color_discrete_map=color_discrete_map)
+                 color_discrete_map=color_discrete_map,
+                 category_orders=category_orders)
     fig.update_layout(**CHART_LAYOUT)
+    if not sort:
+        fig.update_traces(sort=False)
     return fig
 
 def create_histogram(df: pd.DataFrame, x: str, title: str, ref_line: float = None) -> go.Figure:

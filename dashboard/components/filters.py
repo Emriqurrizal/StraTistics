@@ -9,7 +9,7 @@ def render_sidebar_filters():
     
     # Date Range Dropdown
     date_options = ["7 days", "30 days", "3 months", "6 months", "YTD", "1 year"]
-    selected_date_range = st.sidebar.selectbox("Date Range", options=date_options, index=0)
+    selected_date_range = st.sidebar.selectbox("Date Range", options=date_options, index=1)
     
     today = datetime.date.today()
     end_date = today
