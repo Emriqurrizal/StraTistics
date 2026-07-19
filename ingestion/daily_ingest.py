@@ -28,9 +28,9 @@ def run_daily_sync():
     conn = get_db_connection()
     create_schema_if_not_exists(conn)
 
-    print("Fetching your 30 most recent activities from Strava for daily sync...")
-    # Fetch 30 most recent activities to ensure we don't miss any recent runs
-    data = client._request("GET", "athlete/activities", params={'page': 1, 'per_page': 30})
+    print("Fetching your 5 most recent activities from Strava for daily sync...")
+    # Fetch 5 most recent activities to ensure we don't miss any recent runs
+    data = client._request("GET", "athlete/activities", params={'page': 1, 'per_page': 5})
     
     if not data:
         print("No activities found on Strava!")
