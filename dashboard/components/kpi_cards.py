@@ -13,11 +13,16 @@ def render_kpi_row(metrics: dict, previous_metrics: dict = None):
     Render a row of KPI cards.
     metrics dict format: {'Total Distance': (value, 'km'), 'Avg Pace': (value, 'pace')}
     """
-    cols = st.columns(len(metrics))
+    if len(metrics) == 5:
+        # Give more width to Total Distance and Total Duration so they don't get cut off
+        cols = st.columns([1.4, 0.9, 1.0, 1.3, 1.1])
+    else:
+        cols = st.columns(len(metrics))
     
     for i, (key, (value, m_type)) in enumerate(metrics.items()):
         with cols[i]:
             delta = None
+            delta_color = "off"
             if previous_metrics and key in previous_metrics:
                 prev_val, _ = previous_metrics[key]
                 if prev_val:
@@ -34,10 +39,13 @@ def render_kpi_row(metrics: dict, previous_metrics: dict = None):
                     else:
                         diff = value - prev_val
                         pct = (diff / prev_val) * 100 if prev_val else 0
-                        delta = f"{pct:.1f}%"
-                        delta_color = "normal"
-            else:
-                delta_color = "off"
+                        
+                        if round(pct, 1) == 0.0:
+                            delta = "0.0%"
+                            delta_color = "off"
+                        else:
+                            delta = f"{pct:.1f}%"
+                            delta_color = "normal"
             
             # Format value
             if m_type == 'pace':
@@ -48,6 +56,8 @@ def render_kpi_row(metrics: dict, previous_metrics: dict = None):
                 formatted_val = f"{value:,.0f} m"
             elif m_type == 'int':
                 formatted_val = f"{int(value):,}"
+            elif m_type == 'hrs':
+                formatted_val = f"{value:.1f} hrs"
             else:
                 formatted_val = str(value)
                 

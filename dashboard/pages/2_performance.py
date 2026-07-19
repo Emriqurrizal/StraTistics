@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 from db import run_query
 from components.filters import render_sidebar_filters
-from components.charts import create_time_series, create_scatter, create_histogram, create_donut
+from components.charts import create_time_series, create_scatter, create_histogram, create_donut, WORKOUT_COLOR_MAP
 import plotly.express as px
 
 st.title("2. Performance Analytics")
@@ -54,7 +54,8 @@ with col1:
             scatter_df, 'avg_pace_min_per_km', 'average_heartrate', 
             'workout_type', 'distance_km', ['name', 'date_day'],
             "Pace vs Heart Rate",
-            inverted_y=False
+            inverted_y=False,
+            color_discrete_map=WORKOUT_COLOR_MAP
         )
         # Update X axis to be inverted for Pace
         st.plotly_chart(fig2, use_container_width=True)

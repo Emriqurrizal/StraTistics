@@ -104,7 +104,6 @@ if not pmc_df.empty:
             range=[0, pmc_df['daily_distance'].max() * 3] # Keep bars small at the bottom
         ),
         hovermode="x unified",
-        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
         **CHART_LAYOUT
     )
     
