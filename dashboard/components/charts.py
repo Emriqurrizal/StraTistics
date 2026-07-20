@@ -274,7 +274,7 @@ def create_calendar_heatmap(
         fig.add_vline(
             x=boundary - 0.5,
             line_width=1,
-            line_color='rgba(255,255,255,0.15)',
+            line_color='rgba(128, 128, 128, 0.4)',
             line_dash='dot'
         )
     

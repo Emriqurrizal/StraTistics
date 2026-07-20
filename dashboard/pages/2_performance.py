@@ -122,6 +122,7 @@ if not donut_df.empty:
 st.markdown("---")
 
 # 5. Average Cadence per Workout Type
+st.subheader("Average Cadence per Workout Type")
 query_cadence = """
     SELECT 
         COALESCE(workout_type, 'Regular') as workout_type,
@@ -142,7 +143,7 @@ if not cadence_df.empty:
         x='workout_type', 
         y='avg_cadence', 
         color='workout_type',
-        title="Average Cadence per Workout Type",
+        title=" ",
         color_discrete_map=WORKOUT_COLOR_MAP
     )
     st.plotly_chart(fig5, use_container_width=True)

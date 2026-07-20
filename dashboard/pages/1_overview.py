@@ -12,6 +12,7 @@ from datetime import timedelta
 import plotly.graph_objects as go
 
 st.title("Overview")
+st.markdown("---")
 
 # Sidebar filters
 filters = render_sidebar_filters()
