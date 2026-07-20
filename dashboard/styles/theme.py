@@ -12,10 +12,19 @@ def apply_theme():
             border-radius: 10px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             transition: transform 0.2s ease-in-out;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
         }
         
         div[data-testid="metric-container"]:hover {
             transform: translateY(-2px);
+        }
+        
+        div[data-testid="stMetricLabel"] > div, div[data-testid="stMetricValue"] > div {
+            justify-content: center;
         }
         
         /* Hero Section */

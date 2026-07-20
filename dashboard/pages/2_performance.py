@@ -5,6 +5,7 @@ from components.filters import render_sidebar_filters
 from components.charts import create_time_series, create_scatter, create_bar, create_donut, WORKOUT_COLOR_MAP, HR_ZONE_COLOR_MAP
 
 st.title("Performance Analytics")
+st.markdown("Detailed analytics on pace, heart rate, and training efficiency to help you monitor improvements and optimize your workouts.")
 st.markdown("---")
 
 #Sidebar filters
@@ -68,7 +69,7 @@ else:
 st.markdown("---")
 
 # 2. Pace vs Heart Rate Scatter Plot
-st.subheader("Pace vs Heart Rate Scatter Plot")
+st.subheader("Pace vs Heart Rate")
 
 query_scatter = """
     SELECT 

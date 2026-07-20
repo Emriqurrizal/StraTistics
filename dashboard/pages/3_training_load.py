@@ -7,6 +7,7 @@ from plotly.subplots import make_subplots
 from components.charts import CHART_LAYOUT
 
 st.title("Training Load Analytics")
+st.markdown("Insights into your physical stress and recovery utilizing the Performance Management Chart (PMC) to guide your training intensity and prevent overtraining.")
 st.markdown("---")
 
 filters = render_sidebar_filters()
@@ -177,16 +178,16 @@ if not pmc_df.empty:
     fig_gauge = go.Figure(go.Indicator(
         mode="gauge+number+delta",
         value=latest_tsb,
-        number={'font': {'color': status_color}},
+        number={'font': {'color': status_color}, 'valueformat': '.2f'},
         delta={
             'reference': tsb_7d_ago, 
             'position': "bottom", 
-            'valueformat': ".1f",
+            'valueformat': ".2f",
             'increasing': {'color': '#06d6a0', 'symbol': '↑ '},
             'decreasing': {'color': '#ff4b4b', 'symbol': '↓ '}
         },
         gauge={
-            'axis': {'range': [-15, 15], 'tickwidth': 1},
+            'axis': {'range': [-15, 15], 'tickwidth': 1, 'tickvals': [-15, -10, -5, 0, 5, 10, 15]},
             'bar': {'color': "rgba(0,0,0,0)", 'thickness': 0}, # Hide the thick progress bar
             'bgcolor': "rgba(0,0,0,0)", # Transparent background
             'borderwidth': 0,
@@ -248,12 +249,12 @@ if not pmc_df.empty:
     
     fig_ramp.add_trace(go.Indicator(
         mode="number+delta",
-        value=round(latest_rr, 1) if not pd.isna(latest_rr) else 0,
-        number={'font': {'color': rr_status_color}, 'valueformat': ".1f"},
+        value=round(latest_rr, 2) if not pd.isna(latest_rr) else 0,
+        number={'font': {'color': rr_status_color}, 'valueformat': ".2f"},
         delta={
-            'reference': round(rr_7d_ago, 1), 
+            'reference': round(rr_7d_ago, 2), 
             'position': "bottom", 
-            'valueformat': ".1f",
+            'valueformat': ".2f",
             'increasing': {'color': '#06d6a0', 'symbol': '↑ '},
             'decreasing': {'color': '#ff4b4b', 'symbol': '↓ '}
         },
@@ -283,7 +284,7 @@ if not pmc_df.empty:
             marker=dict(size=6, color=rr_status_color),
             fill='tozeroy',
             fillcolor=hex_to_rgba(rr_status_color, 0.2) if rr_status_color != "grey" else "rgba(128,128,128,0.2)",
-            hovertemplate='%{x|%b %d, %Y}<br>Ramp Rate: %{y:.1f}<extra></extra>'
+            hovertemplate='%{x|%b %d, %Y}<br>Ramp Rate: %{y:.2f}<extra></extra>'
         ))
     
     ramp_layout = CHART_LAYOUT.copy()

@@ -6,6 +6,7 @@ import plotly.express as px
 from components.charts import CHART_LAYOUT
 
 st.title("Activity Explorer")
+st.markdown("An in-depth log of your individual activities, providing granular details, pacing splits, and performance metrics for each session.")
 st.markdown("---")
 
 filters = render_sidebar_filters()

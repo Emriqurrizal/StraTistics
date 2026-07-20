@@ -7,7 +7,6 @@ import numpy as np
 CHART_LAYOUT = dict(
     paper_bgcolor='rgba(0,0,0,0)',
     plot_bgcolor='rgba(0,0,0,0)',
-    font=dict(color='#FAFAFA'),
     margin=dict(l=10, r=10, t=40, b=10),
     legend_title_text='',
     legend=dict(
@@ -211,8 +210,7 @@ def create_calendar_heatmap(
         ygap=3,
         showscale=True,
         colorbar=dict(
-            title=dict(text=z_label, font=dict(color='#FAFAFA'), side='top'),
-            tickfont=dict(color='#FAFAFA'),
+            title=dict(text=z_label, side='top'),
             orientation='h',
             yanchor='top',
             y=-0.15,
@@ -306,8 +304,7 @@ def create_github_heatmap(
         xgap=3, ygap=3,
         showscale=True,
         colorbar=dict(
-            title=dict(text=z_label, font=dict(color='#FAFAFA'), side='top'),
-            tickfont=dict(color='#FAFAFA'),
+            title=dict(text=z_label, side='top'),
             orientation='h',
             yanchor='top',
             y=-0.5,

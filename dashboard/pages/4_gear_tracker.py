@@ -6,6 +6,7 @@ import plotly.express as px
 from components.charts import CHART_LAYOUT
 
 st.title("Gear Tracker")
+st.markdown("Track the usage and lifespan of your equipment to ensure timely replacements and maintain optimal performance.")
 st.markdown("---")
 
 filters = render_sidebar_filters()

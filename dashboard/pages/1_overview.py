@@ -12,6 +12,7 @@ from datetime import timedelta
 import plotly.graph_objects as go
 
 st.title("Overview")
+st.markdown("A high-level summary of your recent activities, highlighting key metrics, activity distribution, and overall progress over time.")
 st.markdown("---")
 
 # Sidebar filters
