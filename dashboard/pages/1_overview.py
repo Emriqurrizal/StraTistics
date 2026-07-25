@@ -3,10 +3,6 @@ import pandas as pd
 from db import run_query
 from components.filters import render_sidebar_filters
 from components.kpi_cards import render_kpi_row
-from components.charts import (
-    create_stacked_bar, create_time_series, create_calendar_heatmap,
-    create_github_heatmap, create_donut, WORKOUT_COLOR_MAP
-)
 import plotly.express as px
 from datetime import timedelta
 import plotly.graph_objects as go
