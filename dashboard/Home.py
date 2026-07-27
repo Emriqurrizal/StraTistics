@@ -18,7 +18,6 @@ st.sidebar.title("StraTistics")
 st.sidebar.markdown("End-to-end Strava running analytics pipeline.")
 
 # ─── Data Fetching ───
-@st.cache_data(ttl=300)
 def get_lifetime_stats():
     query = """
         SELECT 
@@ -31,7 +30,6 @@ def get_lifetime_stats():
     """
     return run_query(query)
 
-@st.cache_data(ttl=300)
 def get_latest_activity():
     query = """
         SELECT 
@@ -50,7 +48,6 @@ def get_latest_activity():
     """
     return run_query(query)
 
-@st.cache_data(ttl=300)
 def get_latest_tsb():
     query = """
         SELECT tsb

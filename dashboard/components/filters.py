@@ -1,7 +1,7 @@
 import datetime
 import streamlit as st
 import pandas as pd
-from db import run_query
+from db import run_query, clear_db_cache
 
 def render_sidebar_filters():
     """Render the sidebar filters and return the selected values."""
@@ -37,6 +37,11 @@ def render_sidebar_filters():
     
     selected_workouts = st.sidebar.multiselect("Workout Type", options=available_workouts, default=available_workouts)
     
+    st.sidebar.markdown("---")
+    if st.sidebar.button("Refresh Data", help="Clear cached queries and force fetch fresh data from DB"):
+        clear_db_cache()
+        st.rerun()
+
     return {
         "start_date": start_date,
         "end_date": end_date,
