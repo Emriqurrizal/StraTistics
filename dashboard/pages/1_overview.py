@@ -46,7 +46,7 @@ if not kpi_df.empty:
         "Total Elevation": (kpi_df['total_elevation'][0] or 0, 'm')
     }
     prev_metrics = None
-    if not prev_kpi_df.empty:
+    if not prev_kpi_df.empty and (prev_kpi_df['total_runs'][0] or 0) > 0:
         prev_metrics = {
             "Total Distance": (prev_kpi_df['total_distance'][0] or 0, 'km'),
             "Total Runs": (prev_kpi_df['total_runs'][0] or 0, 'int'),
@@ -55,7 +55,8 @@ if not kpi_df.empty:
             "Total Elevation": (prev_kpi_df['total_elevation'][0] or 0, 'm')
         }
     render_kpi_row(metrics, previous_metrics=prev_metrics)
-    st.caption(f"*(Deltas compare vs prior {window_days} days)*")
+    if prev_metrics:
+        st.caption(f"*(Deltas compare vs prior {window_days} days)*")
 else:
     st.info("No data available for the selected filters.")
 
